@@ -127,7 +127,7 @@ class Entry extends PureComponent {
       return (
         <OrgFile
           path={path}
-          shouldDisableDirtyIndicator={false}
+          shouldDisableDirtyIndicator={this.props.shouldLiveSync}
           shouldDisableActionDrawer={false}
           shouldDisableSyncButtons={false}
         />
@@ -229,6 +229,7 @@ const mapStateToProps = (state) => {
     hasDirtyFiles,
     colorScheme: state.base.get('colorScheme'),
     theme: state.base.get('theme'),
+    shouldLiveSync: state.base.get('shouldLiveSync'),
   };
 };
 
