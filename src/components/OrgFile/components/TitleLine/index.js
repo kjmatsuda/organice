@@ -79,7 +79,7 @@ class TitleLine extends PureComponent {
       this.props.org.selectHeader(header.get('id'));
 
       if (shouldTapTodoToAdvance) {
-        this.props.org.advanceTodoState(null, setShouldLogIntoDrawer);
+        this.props.org.advanceTodoState(null, setShouldLogIntoDrawer, true);
       }
     }
   }
