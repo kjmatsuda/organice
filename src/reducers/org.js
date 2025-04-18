@@ -51,6 +51,8 @@ import {
   pathAndPartOfListItemWithIdInHeaders,
   pathAndPartOfTimestampItemWithIdInHeaders,
   todoKeywordSetForKeyword,
+  firstKeywordCompleted,
+  firstKeywordNotCompleted,
   inheritedValueOfProperty,
   newListItem,
   parentListItemWithIdInHeaders,
@@ -139,6 +141,22 @@ const updateCookiesInAttributedStringWithChildCompletionStates = (parts, complet
   });
 };
 
+const updateTodoStateWithChildCompletionStates = (todoKeyword, todoKeywordSet, completionStates) => {
+  const doneCount = completionStates.filter(isDone => isDone).length;
+  const totalCount = completionStates.length;
+
+  if ((doneCount === totalCount) && !(todoKeywordSet.get('completedKeywords').includes(todoKeyword)))
+  {
+    todoKeyword = firstKeywordCompleted(todoKeywordSet);
+  }
+  else if ((doneCount < totalCount) && (todoKeywordSet.get('completedKeywords').includes(todoKeyword)))
+  {
+    todoKeyword = firstKeywordNotCompleted(todoKeywordSet);
+  }
+
+  return todoKeyword;
+};
+
 const updateCookiesOfHeaderWithId = (file, headerId) => {
   const headers = file.get('headers');
   const headerIndex = indexOfHeaderWithId(headers, headerId);
@@ -180,6 +198,9 @@ const updateCookiesOfHeaderWithId = (file, headerId) => {
     )
     .updateIn(['headers', headerIndex, 'titleLine'], (titleLine) =>
       titleLine.set('rawTitle', attributedStringToRawText(titleLine.get('title')))
+    )
+    .updateIn(['headers', headerIndex, 'titleLine', 'todoKeyword'], todoKeyword =>
+      updateTodoStateWithChildCompletionStates(todoKeyword, todoKeywordSetForKeyword(file.get('todoKeywordSets'), todoKeyword), completionStates)
     );
 };
 

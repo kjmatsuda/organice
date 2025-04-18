@@ -753,6 +753,15 @@ export const todoKeywordSetForKeyword = (todoKeywordSets, keyword) =>
 export const isTodoKeywordCompleted = (todoKeywordSets, keyword) =>
   todoKeywordSetForKeyword(todoKeywordSets, keyword).get('completedKeywords').includes(keyword);
 
+export const firstKeywordCompleted = keywordSet =>
+  keywordSet
+  .get('completedKeywords')
+  .first();
+
+export const firstKeywordNotCompleted = keywordSet =>
+  keywordSet.find(keyword => !keywordSet.get('completedKeywords').includes(keyword)).first() ||
+  keywordSet.first();
+
 export const extractAllOrgTags = (headers) =>
   headers
     .flatMap((h) => h.getIn(['titleLine', 'tags']))
@@ -866,3 +875,4 @@ export const getBreadcrumbsStringFunction = (allHeaders, path) => {
     return breadcrumbs.join(' > ');
   };
 };
+
