@@ -17,6 +17,7 @@ import { getSelectedHeader } from '../../../../../../lib/org_utils';
 import _ from 'lodash';
 import { parseISO } from 'date-fns';
 import format from 'date-fns/format';
+import ja from 'date-fns/locale/ja'
 
 class TimestampEditor extends PureComponent {
   constructor(props) {
@@ -64,7 +65,8 @@ class TimestampEditor extends PureComponent {
 
       const [newYear, newMonth, newDay, newDayName] = format(
         parseISO(event.target.value),
-        'yyyy MM dd eee'
+        'yyyy MM dd eee',
+        {locale: ja}
       ).split(' ');
       onChange(
         timestamp

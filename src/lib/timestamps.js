@@ -1,3 +1,4 @@
+import ja from 'date-fns/locale/ja'
 import {
   format,
   parse,
@@ -66,7 +67,7 @@ export const timestampForDate = (time, { isActive = true, withStartTime = false 
     year: format(time, 'yyyy'),
     month: format(time, 'MM'),
     day: format(time, 'dd'),
-    dayName: format(time, 'eee'),
+    dayName: format(time, 'eee', {locale: ja}),
     startHour: null,
     startMinute: null,
     endHour: null,
@@ -96,7 +97,7 @@ export const getTimestampAsText = (time, { isActive = true, withStartTime = fals
   const bracketPair = isActive ? '<>' : '[]';
   let formatString = 'yyyy-MM-dd eee';
   if (withStartTime) formatString += ' HH:mm';
-  return `${bracketPair[0]}${format(time, formatString)}${bracketPair[1]}`;
+  return `${bracketPair[0]}${format(time, formatString, {locale: ja})}${bracketPair[1]}`;
 };
 
 export const dateForTimestamp = (timestamp) => {
