@@ -1,13 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import './vendor_css/template.scss';
+import * as classes from './vendor_css/template.scss';
+
+document.body.className = classes.body;
+
 import './stylesheet.css';
 
 // import AOS from 'aos';
 // import 'aos/dist/aos.css';
 
-import logo from '../../images/organice.svg';
+import logo from 'url:../../images/organice.svg';
 // import ExternalLink from '../UI/ExternalLink';
 
 import { useEffect } from 'react';
@@ -362,7 +365,7 @@ export default () => {
                       <div className="testimonial p-lg-5">
                         <p className="testimonial-quote text-primary">
                           "Been using organice for years. To me, it’s by far the most usable
-                          solution to interacting with org files on a mobile device."
+                          solution for interacting with org files on a mobile device."
                         </p>
                         <div className="row">
                           <div className="col-3">

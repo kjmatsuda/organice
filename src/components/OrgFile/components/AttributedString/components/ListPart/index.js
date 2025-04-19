@@ -118,8 +118,14 @@ export default class ListPart extends PureComponent {
     return () => this.props.subPartDataAndHandlers.onListItemSelect(itemId);
   }
 
-  handleCheckboxClick(itemId) {
-    return () => this.props.subPartDataAndHandlers.onCheckboxClick(itemId);
+  handleCheckboxClick(e, itemId) {
+    // Ticking a checkbox should only tick the checkbox, not enable
+    // the list item manipulating functions from
+    // `handleListItemSelect`.
+    // Relevant discussion:
+    // https://github.com/200ok-ch/organice/discussions/950
+    e.stopPropagation();
+    return this.props.subPartDataAndHandlers.onCheckboxClick(itemId);
   }
 
   handleTextareaBlur() {
@@ -228,7 +234,7 @@ export default class ListPart extends PureComponent {
           <div className={lineContainerClass} onClick={this.handleListItemSelect(item.get('id'))}>
             {item.get('isCheckbox') && (
               <Checkbox
-                onClick={this.handleCheckboxClick(item.get('id'))}
+                onClick={(e) => this.handleCheckboxClick(e, item.get('id'))}
                 state={item.get('checkboxState')}
               />
             )}
@@ -237,6 +243,7 @@ export default class ListPart extends PureComponent {
                 <textarea
                   autoFocus
                   className="textarea"
+                  data-testid="list-item-edit"
                   rows="3"
                   ref={this.handleTextareaRef}
                   value={listTitleValues.get(item.get('id'))}

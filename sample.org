@@ -4,7 +4,7 @@
 #+TODO: START INPROGRESS STALLED | FINISHED
 
 * This is an actual org file - feel free to play around with it! (Don't worry about messing it up - your changes won't be saved, so just refresh the page to reset it)
-* For starters, tap on the next header to open it
+* Tap on any header to open it
 This header has some description text and a couple subheaders. Look through the next few top level headers to learn more about organice.
 ** This is a subheader
 ** This is a subheader too!
@@ -14,7 +14,7 @@ When you select a header, the "header action drawer" appears. The first two icon
 
 Title and Description fields are not edited as raw text by default. Instead, a semantic editor comes up when editing them. To edit raw values, click the 'edit' icon, again.
 
-If you want the "header action drawer" to disappear or to deselect the current header, tap into the title (or empty space) in the headerbar.
+If you want the "header action drawer" to disappear or to deselect the current header, tap onto the title (or empty space) in the application's headerbar.
 
 ** All icons in the header action bar
 
@@ -158,21 +158,21 @@ On the right side, the four-way arrow buttons allow you to manipulate tables by 
 
 Press up and down to move rows, and left and right to move columns.
 * Lists and checkboxes
-organice has native support for displaying plain lists and checkboxes
+organice has native support for displaying plain lists and checkboxes.
 
 Plain:
 
-- plain list item 1
-- plain list item 2
-  - sub item 1
-- plain list item 3
+- Plain list item 1
+- Plain list item 2
+  - Sub item 1
+- Plain list item 3
 
 Ordered:
 
-1. Item 1
-2. Item 2
-20. [@20] Item 20
-21. Item 21
+1. Ordered Item 1
+2. Ordered Item 2
+   1. Sub item
+3. Ordered Item 2
 
 Checkboxes:
 
@@ -182,7 +182,28 @@ Checkboxes:
   - [X] 1. 2
 - [X] 2
 
-Currently, plain lists are mostly display only (except that you can check/uncheck checkboxes). If native support for manipulating plain lists is important to you, please let me know by upvoting [[https://github.com/200ok-ch/organice/issues/26][the issue]] on Github
+** Editing workflow
+
+First, create the first list item by editing the description of a header. When you close the "edit description" modal, you can manipulate the list item with native list manipulation functions. The UX is analogous to manipulating a header. Here's what you can do:
+
+- Add new list item
+- Remove list item
+- Move list item up
+- Move list item down
+- Move list item left
+- Move list item right
+- Move list subtree left
+- Move list subtree right
+- Edit list item title
+- Edit list item contents
+
+** All icons in the list action bar
+
+1. Pen: Edit list item title
+2. Pen in square: Edit list item contents
+3. Plus: Create new list item below
+4. Cross: Delete list item
+
 * Timestamps
 organice has native support for displaying and editing [[https://orgmode.org/manual/Timestamps.html#Timestamps][timestamps]].
 
@@ -473,3 +494,7 @@ organice supports a flexible mechanism for capturing using URL parameters. This 
 You can use [[https://www.icloud.com/shortcuts/14f91f8cf8f547a183a0734396240984][this sample Shortcut]] to get started with this right away in iOS 12. Open the link on your iOS device and click "Get Shortcut". Then open up the Shortcuts app and edit the template by following the directions in the comments. Then record a Siri trigger and you're good to go!
 
 Alternatively, you can take advantage of the URL parameters yourself to build your own custom capture mechanism. You can find more details about this in [[https://github.com/200ok-ch/organice/#capture-params-and-siri-support][the README file]].
+
+* Further questions?
+
+If you've finished this interactive tutorial, but have further questions, we have you covered! There is additional [[https://organice.200ok.ch/documentation.html][documentation]] which contains more comprehensive and formal documentation, including installation instructions, deployment guides, contribution guidelines, and technical details about the project's architecture and development process. This file is aimed at both users seeking in-depth information and developers interested in contributing to the project.
