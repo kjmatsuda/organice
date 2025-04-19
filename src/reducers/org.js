@@ -59,6 +59,7 @@ import {
   updateListContainingListItemId,
   headerThatContainsListItemId,
   updateContentsWithListItemAddition,
+  newPlanningItem,
 } from '../lib/org_utils';
 import { timestampForDate, getTimestampAsText, applyRepeater } from '../lib/timestamps';
 import generateId from '../lib/id_generator';
@@ -157,6 +158,35 @@ const updateTodoStateWithChildCompletionStates = (todoKeyword, todoKeywordSet, c
   return todoKeyword;
 };
 
+const updatePlanningItemsWithChildCompletionStates = (
+  planningItems,
+  todoKeyword,
+  todoKeywordSet,
+  completionStates
+) => {
+  const doneCount = completionStates.filter(isDone => isDone).length;
+  const totalCount = completionStates.length;
+
+  if (doneCount === totalCount && !todoKeywordSet.get('completedKeywords').includes(todoKeyword)) {
+    planningItems = !!planningItems
+      ? planningItems.push(newPlanningItem('CLOSED'))
+      : List([newPlanningItem('CLOSED')]);
+  } else if (
+    doneCount < totalCount &&
+    todoKeywordSet.get('completedKeywords').includes(todoKeyword)
+  ) {
+    const planningItemIndex = planningItems.findIndex(
+      planningItem => planningItem.get('type') === 'CLOSED'
+    );
+    if (planningItemIndex < 0) {
+      return planningItems;
+    }
+    planningItems = planningItems.delete(planningItemIndex);
+  }
+
+  return planningItems;
+};
+
 const updateCookiesOfHeaderWithId = (file, headerId) => {
   const headers = file.get('headers');
   const headerIndex = indexOfHeaderWithId(headers, headerId);
@@ -192,6 +222,8 @@ const updateCookiesOfHeaderWithId = (file, headerId) => {
       .toJS();
   }
 
+  const todoKeywordArg = file.getIn(['headers', headerIndex, 'titleLine', 'todoKeyword']);
+
   return file
     .updateIn(['headers', headerIndex, 'titleLine', 'title'], (title) =>
       updateCookiesInAttributedStringWithChildCompletionStates(title, completionStates)
@@ -201,6 +233,14 @@ const updateCookiesOfHeaderWithId = (file, headerId) => {
     )
     .updateIn(['headers', headerIndex, 'titleLine', 'todoKeyword'], todoKeyword =>
       updateTodoStateWithChildCompletionStates(todoKeyword, todoKeywordSetForKeyword(file.get('todoKeywordSets'), todoKeyword), completionStates)
+    )
+    .updateIn(['headers', headerIndex, 'planningItems'], planningItems =>
+      updatePlanningItemsWithChildCompletionStates(
+        planningItems,
+        todoKeywordArg,
+        todoKeywordSetForKeyword(file.get('todoKeywordSets'), todoKeywordArg),
+        completionStates
+      )
     );
 };
 
@@ -237,6 +277,18 @@ const advanceTodoState = (state, action) => {
   }
 
   const newTodoState = currentTodoSet.get('keywords').get(newStateIndex) || '';
+
+  if (
+    !currentTodoSet.get('completedKeywords').includes(currentTodoState) &&
+    currentTodoSet.get('completedKeywords').includes(newTodoState)
+  ) {
+    state = addNewPlanningItem(state, { headerId: headerId, planningType: 'CLOSED' });
+  } else if (
+    currentTodoSet.get('completedKeywords').includes(currentTodoState) &&
+    !currentTodoSet.get('completedKeywords').includes(newTodoState)
+  ) {
+    state = removePlanningItem(state, { headerId: headerId, planningType: 'CLOSED' });
+  }
 
   const indexedPlanningItemsWithRepeaters = header
     .get('planningItems')
@@ -1394,20 +1446,24 @@ const updatePlanningItemTimestamp = (state, action) => {
 const addNewPlanningItem = (state, action) => {
   const headerIndex = indexOfHeaderWithId(state.get('headers'), action.headerId);
 
-  const newPlanningItem = fromJS({
-    id: generateId(),
-    type: action.planningType,
-    timestamp: timestampForDate(action.timestamp),
-  });
-
   return state.updateIn(['headers', headerIndex, 'planningItems'], (planningItems) =>
-    !!planningItems ? planningItems.push(newPlanningItem) : List([newPlanningItem])
+    !!planningItems ? planningItems.push(newPlanningItem(action.planningType)) : List([newPlanningItem(action.planningType)])
   );
 };
 
 const removePlanningItem = (state, action) => {
   const headerIndex = indexOfHeaderWithId(state.get('headers'), action.headerId);
-  const { planningItemIndex } = action;
+  let { planningItemIndex } = action;
+
+  if (!planningItemIndex) {
+    planningItemIndex = state
+      .getIn(['headers', headerIndex, 'planningItems'])
+      .findIndex(planningItem => planningItem.get('type') === action.planningType);
+
+    if (planningItemIndex < 0) {
+      return state;
+    }
+  }
 
   return state.removeIn(['headers', headerIndex, 'planningItems', planningItemIndex]);
 };

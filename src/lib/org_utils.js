@@ -6,6 +6,7 @@ import { formatDistanceToNow } from 'date-fns';
 import generateId from './id_generator';
 import { attributedStringToRawText } from './export_org';
 import substituteTemplateVariables from './capture_template_substitution';
+import { getCurrentTimestamp } from './timestamps';
 
 export const STATIC_FILE_PREFIX = 'organice_internal_';
 
@@ -709,6 +710,21 @@ export const updateContentsWithListItemAddition = (parts, listItem, listPart = n
       default:
         return part;
     }
+  });
+};
+
+export const newPlanningItem = planningType => {
+  let isActive = true;
+  let withStartTime = false;
+  if (planningType === 'CLOSED') {
+    isActive = false;
+    withStartTime = true;
+  }
+
+  return fromJS({
+    id: generateId(),
+    type: planningType,
+    timestamp: getCurrentTimestamp({ isActive: isActive, withStartTime: withStartTime }),
   });
 };
 
