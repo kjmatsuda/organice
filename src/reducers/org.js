@@ -282,12 +282,12 @@ const advanceTodoState = (state, action) => {
     !currentTodoSet.get('completedKeywords').includes(currentTodoState) &&
     currentTodoSet.get('completedKeywords').includes(newTodoState)
   ) {
-    state = addNewPlanningItem(state, { headerId: headerId, planningType: 'CLOSED' });
+    state = addNewPlanningItem(state, { headerId: existingHeaderId, planningType: 'CLOSED' });
   } else if (
     currentTodoSet.get('completedKeywords').includes(currentTodoState) &&
     !currentTodoSet.get('completedKeywords').includes(newTodoState)
   ) {
-    state = removePlanningItem(state, { headerId: headerId, planningType: 'CLOSED' });
+    state = removePlanningItem(state, { headerId: existingHeaderId, planningType: 'CLOSED' });
   }
 
   const indexedPlanningItemsWithRepeaters = header
