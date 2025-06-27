@@ -38,7 +38,7 @@
   "scripts": {
     "start": "./bin/compile_search_parser.sh && parcel --port 3000",
     "compile-sass": "parcel build src/components/Landing/vendor_css/template.scss",
-    "build": "./bin/compile_search_parser.sh && parcel build",
+    "build": "./bin/compile_search_parser.sh && parcel build --public-url /apps/organice/ && ./bin/convert_start_url.sh",
     "test": "./bin/compile_search_parser.sh && jest --env=jsdom",
     "coverage": "./bin/compile_search_parser.sh && jest --env=jsdom --coverage --watchAll=false",
     "eslint": "./node_modules/.bin/eslint --cache .",
