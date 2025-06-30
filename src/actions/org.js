@@ -193,8 +193,7 @@ const doSync = ({
             });
         } else {
           if (!shouldSuppressMessages) {
-            // TODO あとで元に戻す
-            dispatch(setDisappearingLoadingMessage('(test)Nothing to sync', 2000));
+            dispatch(setDisappearingLoadingMessage('Nothing to sync', 2000));
           } else {
             setTimeout(() => dispatch(hideLoadingMessage()), 2000);
           }
