@@ -1,0 +1,26 @@
+name: Deploy organice to Sakura VPS
+
+on:
+  push:
+    branches:
+      - my-issues
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          port: ${{ secrets.SSH_PORT }}
+          key: ${{ secrets.SSH_KEY }}
+          passphrase: ${{ secrets.SSH_PASS }}
+          script: |
+            cd ${{ secrets.ORGANICE_DEPLOY_DIR }}
+            git pull origin my-issues
+            yarn install
+            yarn build
+            sudo systemctl stop organice.service
+            sudo systemctl start organice.service
