@@ -193,7 +193,7 @@ export default class App extends PureComponent {
   render() {
     return (
       <DragDropContext onDragEnd={this.handleDragEnd}>
-        <BrowserRouter>
+        <BrowserRouter basename="/apps/organice/">
           <Provider store={this.store}>
             <Turnout />
           </Provider>

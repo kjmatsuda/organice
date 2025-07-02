@@ -158,7 +158,7 @@ export default class SyncServiceSignIn extends PureComponent {
 
   handleDropboxClick() {
     persistField('authenticatedSyncService', 'Dropbox');
-    const REDIRECT_URI = window.location.origin + '/';
+    const REDIRECT_URI = window.location.origin + '/apps/organice/';
 
     const dbxAuth = new DropboxAuth({
       clientId: process.env.REACT_APP_DROPBOX_CLIENT_ID,
