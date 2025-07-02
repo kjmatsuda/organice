@@ -5,7 +5,7 @@
       "type": "chrome",
       "request": "launch",
       "name": "Launch Chrome with Parcel",
-      "url": "http://localhost:3000",
+      "url": "http://localhost:3000/apps/organice/",
       "webRoot": "${workspaceFolder}",
       "sourceMaps": true,
       "sourceMapPathOverrides": {

@@ -184,7 +184,7 @@ export default () => {
   -  SDK Docs: https://dropbox.github.io/dropbox-sdk-js/index.html
   -  Migrating App Permissions and Access Tokens: https://dropbox.tech/developers/migrating-app-permissions-and-access-tokens */
 
-  const REDIRECT_URI = window.location.origin + '/';
+  const REDIRECT_URI = window.location.origin + '/apps/organice/';
 
   dbxPromise = new Promise((resolve, reject) => {
     const dbx = new Dropbox({

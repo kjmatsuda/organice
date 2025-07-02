@@ -123,7 +123,7 @@ export default () => {
                       </a>
                     </li>
                   </ul>
-                  <a className="btn fw-500 ms-lg-4 btn-teal" href="/sign_in">
+                  <a className="btn fw-500 ms-lg-4 btn-teal" href="/apps/organice/sign_in">
                     Sign in
                     {/* <i className="ms-2" data-feather="arrow-right"></i> */}
                     <ArrowRight className="ms-2" />
@@ -150,13 +150,13 @@ export default () => {
                         files.
                       </p>
 
-                      <a className="btn btn-teal fw-500 me-2" href="/sample">
+                      <a className="btn btn-teal fw-500 me-2" href="/apps/organice/sample">
                         Live demo
                         {/* <i className="ms-2" data-feather="arrow-right"></i> */}
                         <ArrowRight className="ms-2" />
                       </a>
 
-                      <a className="btn btn-white fw-500 me-2" href="/sign_in">
+                      <a className="btn btn-white fw-500 me-2" href="/apps/organice/sign_in">
                         Sign in
                         {/* <i className="ms-2" data-feather="arrow-right"></i> */}
                         <ArrowRight className="ms-2" />
