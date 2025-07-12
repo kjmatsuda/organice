@@ -245,12 +245,18 @@ const updateCookiesOfHeaderWithId = (file, headerId) => {
 };
 
 const updateCookiesOfParentOfHeaderWithId = (file, headerId) => {
-  const parentHeaderId = parentIdOfHeaderWithId(file.get('headers'), headerId);
-  if (!parentHeaderId) {
-    return file;
+  let currentHeaderId = headerId;
+
+  while (currentHeaderId) {
+    const parentHeaderId = parentIdOfHeaderWithId(file.get('headers'), currentHeaderId);
+    if (!parentHeaderId) {
+      break;
+    }
+    file = updateCookiesOfHeaderWithId(file, parentHeaderId);
+    currentHeaderId = parentHeaderId;
   }
 
-  return updateCookiesOfHeaderWithId(file, parentHeaderId);
+  return file;
 };
 
 const advanceTodoState = (state, action) => {
