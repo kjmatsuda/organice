@@ -7,6 +7,113 @@ All user visible changes to organice will be documented in this file.
 
 When there are updates to the changelog, you will be notified and see a 'gift' icon appear on the top right corner.
 
+* [2025-06-22 Sun]
+
+** Fixed
+
+*** When exporting to email, don't just export the selected headline, but sub-headlines
+
+** Added
+
+*** Users can now share their headlines (including sub-headlines) to any app - with a fallback to mail.
+
+- PR: https://github.com/200ok-ch/organice/pull/1036
+
+* [2025-06-18 Wed]
+
+** Fixed
+
+*** Made it harder to accidentally swipe left or right on headers
+
+- Changed swipe detection from fixed distance to relative distance (2x)
+- This reduces accidental swipes while maintaining intentional swipe functionality
+- PR: https://github.com/200ok-ch/organice/pull/1034
+- Thank you [[https://github.com/vHugoObject][vHugoObject]] for the PR🙏
+
+* [2025-06-06 Fri]
+
+** Fixed
+
+*** Repeater state changes will now always be filed to the correct header
+
+- =updatePlanningItemsWithRepeaters= now selects the header it intends to update
+
+PR: https://github.com/200ok-ch/organice/pull/1029
+
+* [2025-05-24 Sat]
+
+** Added
+*** Duplicate header via long-press on '+' icon
+
+- Long-pressing the '+' icon in the header action drawer now
+  duplicates the current header and its entire subtree.
+- Visual feedback for the long-press interaction has been
+  significantly enhanced with larger surrounding shadows for better
+  visibility, especially on touch devices.
+- Short-press on the '+' icon continues to add a new, empty header.
+
+PR: https://github.com/200ok-ch/organice/pull/1025
+
+** Fixed
+*** Table add/remove button inverted
+
+PR: https://github.com/200ok-ch/organice/pull/1024
+
+* [2025-05-22 Thu]
+
+** Changed
+
+*** Refactor and unify Docker setup for improved development and production builds
+
+  - Introduce a multi-stage =Dockerfile=. This file defines distinct
+    stages for =base=, =development=, =build=, and =production=,
+    ensuring optimized layers and dependencies.
+  - The production Docker image is lean, containing only necessary built assets and runtime dependencies.
+
+This significantly simplifies Docker configuration management,
+enhances the developer experience when using Docker, and builds upon
+earlier work by @rogueai to create lean production images.
+
+The PR is: https://github.com/200ok-ch/organice/pull/1023
+
+* [2025-05-06 Tue]
+
+** Added
+
+*** Add visual cue for overdue headers when displaying headers
+
+- Before this change: When enabling the setting "Show Deadline
+  Display", the respective deadline will be displayed on each header
+  line.
+- After this change, in the deadline will show in grey if not overdue
+  and in red if overdue.
+
+This change was originally proposed and implemented by @dmorlitz:
+https://github.com/200ok-ch/organice/pull/970
+
+The merged PR is: https://github.com/200ok-ch/organice/pull/1019
+
+** Fixed
+
+*** Resolved issue where search input field could scroll off-screen on iOS devices
+  - The search input in popups (like Search, Task List) will no longer
+    attempt to automatically focus on iOS. This prevents the field
+    from being pushed out of view by the virtual keyboard. iOS users
+    will now need to tap the input to activate it.
+  - On non-iOS platforms, the search input will now auto-focus with a
+    slight delay to improve usability.
+  - PR: https://github.com/200ok-ch/organice/pull/1018
+
+*** CI Tasks: docker build/push and deploy-prod
+
+- Building the docker image has been broken for some time.
+- Deploying to prod via CI had an issue since switching to parcel.
+
+Both seem to be working as of commit
+e72d01081863e69f7410be87f09aeb2ac68e3c1d. There's no PR, because I
+made these changes directly to the =master= branch, because these CI
+tasks should only run for production ready code.
+
 * [2025-04-11 Fri]
 
 ** Changed

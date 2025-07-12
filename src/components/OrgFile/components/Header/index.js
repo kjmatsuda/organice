@@ -21,6 +21,8 @@ import { headerWithId } from '../../../../lib/org_utils';
 import { interpolateColors, rgbaObject, rgbaString, readRgbaVariable } from '../../../../lib/color';
 import { getCurrentTimestamp, millisDuration } from '../../../../lib/timestamps';
 import { Map } from 'immutable';
+import { shareContent } from '../../../../lib/share_utils';
+import { exportHeaderWithSubheaders } from '../../../../lib/export_org';
 
 class Header extends PureComponent {
   SWIPE_ACTION_ACTIVATION_DISTANCE = 80;
@@ -49,6 +51,7 @@ class Header extends PureComponent {
       'handleShareHeaderClick',
       'handleRefileHeaderRequest',
       'handleAddNoteClick',
+      'handleDuplicateHeader',
     ]);
 
     this.state = {
@@ -139,16 +142,14 @@ class Header extends PureComponent {
     const { dragStartX, currentDragX } = this.state;
 
     if (!!dragStartX && !!currentDragX) {
-      const swipeDistance = currentDragX - dragStartX;
-
-      if (swipeDistance >= this.SWIPE_ACTION_ACTIVATION_DISTANCE) {
+      if (currentDragX >= 2 * dragStartX) {
         this.props.org.advanceTodoState(
           this.props.header.get('id'),
           this.props.shouldLogIntoDrawer
         );
       }
 
-      if (-1 * swipeDistance >= this.SWIPE_ACTION_ACTIVATION_DISTANCE) {
+      if (dragStartX >= 2 * currentDragX) {
         this.setState({
           isPlayingRemoveAnimation: true,
           heightBeforeRemove: this.containerDiv.offsetHeight,
@@ -280,6 +281,10 @@ class Header extends PureComponent {
     this.props.org.addHeaderAndEdit(this.props.header.get('id'));
   }
 
+  handleDuplicateHeader() {
+    this.props.org.duplicateHeader(this.props.header.get('id'));
+  }
+
   handleRest() {
     if (this.state.isPlayingRemoveAnimation) {
       this.props.org.removeHeader(this.props.header.get('id'));
@@ -330,32 +335,26 @@ class Header extends PureComponent {
   }
 
   handleShareHeaderClick() {
-    const { header } = this.props;
+    const { header, headers } = this.props;
 
     const titleLine = header.get('titleLine');
     const todoKeyword = titleLine.get('todoKeyword');
-    const tags = titleLine.get('tags');
     const title = titleLine.get('rawTitle').trim();
-    const subject = todoKeyword ? `${todoKeyword} ${title}` : title;
-    const body = `
-${tags.isEmpty() ? '' : `Tags: ${tags.join(' ')}\n`}
-${header.get('rawDescription')}`;
-    //const titleParts = titleLine.get('title'); // List of parsed tokens in title
-    //const properties = header.get('propertyListItem'); //.get(0) .get('property') or .get('value')
-    //const planningItems = header.get('planningItems'); //.get(0) .get('type') [DEADLINE|SCHEDULED] or .get('timestamp')
-    const mailtoURI = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(
-      body
-    )}`;
-    // TODO: If available, use webshare
-    // Maybe there's synergy with this PR: https://github.com/200ok-ch/organice/pull/138/files
+    const fullTitle = todoKeyword ? `${todoKeyword} ${title}` : title;
 
-    window.open(mailtoURI);
-    // INFO: Alternative implementation that works without having a
-    // popup window. We didn't go this route, because it's non-trivial
-    // to mock the window object, so it's harder to test. Having
-    // slightly worse UX in favor of having a test is not optimal, as
-    // well, of course.
-    // window.location.href = mailtoURI;
+    // Export header with all sub-headers
+    const content = exportHeaderWithSubheaders(header, headers, {
+      includeSubheaders: true,
+      recursive: true,
+      includeTitle: true,
+      dontIndent: false,
+    });
+
+    // Use Web Share API with fallback to email
+    shareContent({
+      title: fullTitle,
+      text: content,
+    });
   }
 
   handleAddNoteClick() {
@@ -393,13 +392,25 @@ ${header.get('rawDescription')}`;
       .map((p) => p.get('timestamp'))
       .get(0);
 
-    const headerDeadline =
-      headerDeadlineMap !== undefined
-        ? headerDeadlineMap.get('month') +
-          '-' +
-          headerDeadlineMap.get('day') +
-          '-' +
-          headerDeadlineMap.get('year')
+    let isOverdue = false;
+    let deadlineString = '';
+    if (showDeadlineDisplay && headerDeadlineMap) {
+      const year = headerDeadlineMap.get('year');
+      const month = headerDeadlineMap.get('month');
+      const day = headerDeadlineMap.get('day');
+      // Ensure parts are parsed as integers for Date constructor
+      const deadlineDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Normalize today to midnight for date-only comparison
+
+      isOverdue = deadlineDate < today;
+      deadlineString = `${year}-${month}-${day}`;
+    }
+
+    const clockDisplayString =
+      showClockDisplay && header.get('totalTimeLoggedRecursive') !== 0
+        ? millisDuration(header.get('totalTimeLoggedRecursive'))
         : '';
 
     const {
@@ -551,15 +562,11 @@ ${header.get('rawDescription')}`;
                 isSelected={isSelected}
                 shouldDisableExplicitWidth={swipedDistance === 0}
                 shouldDisableActions={shouldDisableActions}
-                addition={
-                  (showClockDisplay && header.get('totalTimeLoggedRecursive') !== 0
-                    ? millisDuration(header.get('totalTimeLoggedRecursive'))
-                    : '') +
-                  // Spacing between 'clock display' and 'deadline
-                  // display' overlays
-                  (showClockDisplay && showDeadlineDisplay ? ' ' : '') +
-                  (showDeadlineDisplay && headerDeadline !== undefined ? headerDeadline : '')
-                }
+                addition={clockDisplayString}
+                showDeadlineDisplay={showDeadlineDisplay}
+                headerDeadlineMap={headerDeadlineMap}
+                deadlineString={deadlineString}
+                isOverdue={isOverdue}
               />
 
               <Collapse
@@ -583,6 +590,7 @@ ${header.get('rawDescription')}`;
                   onShareHeader={this.handleShareHeaderClick}
                   onRefileHeader={this.handleRefileHeaderRequest}
                   onAddNote={this.handleAddNoteClick}
+                  onDuplicateHeader={this.handleDuplicateHeader}
                 />
               </Collapse>
 
@@ -610,6 +618,7 @@ const mapStateToProps = (state, ownProps) => {
     isNarrowed: !!narrowedHeader && narrowedHeader.get('id') === ownProps.header.get('id'),
     showClockDisplay: state.org.present.get('showClockDisplay'),
     showDeadlineDisplay: state.base.get('showDeadlineDisplay'),
+    headers: file.get('headers'),
   };
 };
 

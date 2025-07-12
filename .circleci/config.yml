@@ -107,8 +107,8 @@ jobs:
     machine: true
     steps:
       - checkout
-      # Build docker image and push it to DockerHub
-      - run: docker build --rm=false -t ${DOCKER_HUB_USR}/organice:${CIRCLE_BUILD_NUM} .
+      # Build production docker image and push it to DockerHub
+      - run: docker build --rm=false --target production -t ${DOCKER_HUB_USR}/organice:${CIRCLE_BUILD_NUM} .
       - run: docker login --username ${DOCKER_HUB_USR} --password ${DOCKER_HUB_PWD}
       - run: docker push ${DOCKER_HUB_USR}/organice:${CIRCLE_BUILD_NUM}
       # Re-assign latest tag to current build
@@ -137,14 +137,14 @@ workflows:
               only: develop
       # FIXME: This used to work and broke due to erosion
       # Related issue: https://github.com/200ok-ch/organice/issues/909
-      # - push-image:
-      #     requires:
-      #       # Staging deployments are free of linting and test checks,
-      #       # so that we can quickly build, deploy and iterate.
-      #       # There's still visual feedback on Github on whether or
-      #       # not the tasks failed.
-      #       # - build # because of tests
-      #       # - build-docs
-      #     filters:
-      #       branches:
-      #         only: master
+      - push-image:
+          requires:
+            # Staging deployments are free of linting and test checks,
+            # so that we can quickly build, deploy and iterate.
+            # There's still visual feedback on Github on whether or
+            # not the tasks failed.
+            # - build # because of tests
+            # - build-docs
+          filters:
+            branches:
+              only: master
