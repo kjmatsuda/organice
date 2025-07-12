@@ -1485,7 +1485,7 @@ const removePlanningItem = (state, action) => {
   const headerIndex = indexOfHeaderWithId(state.get('headers'), action.headerId);
   let { planningItemIndex } = action;
 
-  if (!planningItemIndex) {
+  if (planningItemIndex === undefined) {
     planningItemIndex = state
       .getIn(['headers', headerIndex, 'planningItems'])
       .findIndex(planningItem => planningItem.get('type') === action.planningType);
